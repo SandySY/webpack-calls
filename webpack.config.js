@@ -1,10 +1,18 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const isDev = process.env.NODE_ENV  === 'development';
 const config = require('./public/config')[isDev? 'dev' : 'build'];
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   // mode: "development",//"production",
   mode: isDev ? 'development' : 'production',
+  entry: './src/index.js',//webpack的默认配置 值可以是一个字符串，一个数组或是一个对象。
+  output: {
+    path: path.resolve(__dirname, 'dd'),
+    filename: "bundle.[hash:6].js",
+    publicPath: "/"
+  },
   module: {
     rules: [
       {
@@ -56,7 +64,7 @@ module.exports = {
               limit: 10240, //10k 即资源大小小于 10K 时，将资源转换为 base64，超过 10K，将图片拷贝到 dist 目录
               esModule: false, //支持<img src={require('XXX.jpg')} />
               outputPath: 'assets',
-              name: '[name]_[hash:6].[ext]'  //拷贝到dist的文件名
+              name: '[name]_[hash:8].[ext]'  //拷贝到dist的文件名
             }
           }
         ],
@@ -78,6 +86,9 @@ module.exports = {
         collapseWhitespace: false, //是否折叠空白
       },
       hash: true
+    }),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', '!dll', '!dll/**']//不删除dll目录下的文件
     })
   ],
   devServer: {
@@ -89,5 +100,5 @@ module.exports = {
     clientLogLevel: "silent", //日志等级
     compress: true //是否启用 gzip 压缩
   },
-  devtool: "source-map" //"cheap-module-eval-source-map"//开发环境下使用
+  devtool: "cheap-module-eval-source-map"//"source-map" //开发环境下使用 将编译后的代码映射回原始源代码
 }
